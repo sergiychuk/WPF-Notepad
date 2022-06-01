@@ -37,7 +37,8 @@ namespace Text_Editor
         #region [PROPERTIES]
         // Властивість для об'єкту RichTextBox
         public RichTextBox TextEditor{ get { return textEditor; } set { textEditor = value; } }
-        public bool LockToolBar => lockToolBar; // { get { return lockToolBar; } set { lockToolBar = value; } }
+        public bool LockToolBar { get { return lockToolBar; } set { lockToolBar = value; } }
+        public bool ShowStatusbar { get; set; }
         #endregion
 
         #region [METHODS]

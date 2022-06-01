@@ -73,7 +73,6 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="RelayCommand.cs" />
-    <Compile Include="Settings.cs" />
     <Compile Include="ViewModel.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
@@ -110,7 +109,8 @@
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
-    <None Include="Resources\Fonts\Exo.ttf" />
+    <Resource Include="Resources\Fonts\Exo\Exo-Regular.ttf" />
+    <Resource Include="Resources\Fonts\Exo\Exo-Medium.ttf" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
@@ -171,6 +171,23 @@
       <ProductName>.NET Framework 3.5 SP1</ProductName>
       <Install>false</Install>
     </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="main_icon.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Icons\Material\Black\align_center.png" />
+    <Resource Include="Resources\Icons\Material\Black\align_left.png" />
+    <Resource Include="Resources\Icons\Material\Black\align_right.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Icons\Material\Black\align_justify.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Icons\Material\paste.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="paste.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

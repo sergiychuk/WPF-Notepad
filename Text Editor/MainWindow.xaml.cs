@@ -29,7 +29,7 @@ namespace Text_Editor
             InitializeComponent();
             this.DataContext = viewModel;
             viewModel.TextEditor = txtEditor;
-
+            txtEditor.Focus();
             // Біндимо до випадаючих списків список шрифтів та список розміру шрифту відповідно
             cmbFontFamily.ItemsSource = Fonts.SystemFontFamilies.OrderBy(f => f.Source);
             cmbFontFamily.SelectedIndex = 8;
@@ -41,7 +41,7 @@ namespace Text_Editor
         #region [On any text changes event handler]
         private void txtEditor_SelectionChanged(object sender, RoutedEventArgs e)
         {
-            this.Title = txtEditor.CaretPosition.GetTextInRun(LogicalDirection.Forward);
+            //this.Title = txtEditor.CaretPosition.GetTextInRun(LogicalDirection.Forward);
             //txtEditor.Selection.ApplyPropertyValue(Inline.FontFamilyProperty, cmbFontFamily.SelectedItem);
             CountInTextWordsCharsLines();
         }
@@ -89,6 +89,7 @@ namespace Text_Editor
         #region [Font settings handlers]
         private void cmbFontFamily_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
+            this.Title = cmbFontFamily.Items.CurrentItem.ToString();
             if (cmbFontFamily.SelectedItem != null)
             {
                 cmbFontFamily.FontFamily = cmbFontFamily.SelectedItem as FontFamily;
