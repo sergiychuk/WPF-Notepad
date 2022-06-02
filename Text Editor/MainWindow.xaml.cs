@@ -22,28 +22,50 @@ namespace Text_Editor
     /// </summary>
     public partial class MainWindow : Window
     {
-        private readonly ViewModel viewModel = new ViewModel();
+        private readonly ViewModel viewModel;
 
         public MainWindow()
         {
             InitializeComponent();
-            this.DataContext = viewModel;
-            viewModel.TextEditor = txtEditor;
+            // При запуску ставить фокус на текстове поле
             txtEditor.Focus();
+            // TODO зробити через прив'язку в XAML
+            viewModel = new ViewModel(txtEditor);
+            // Прив'яка до View Model
+            this.DataContext = viewModel;
             // Біндимо до випадаючих списків список шрифтів та список розміру шрифту відповідно
             cmbFontFamily.ItemsSource = Fonts.SystemFontFamilies.OrderBy(f => f.Source);
-            cmbFontFamily.SelectedIndex = 8;
-            cmbFontSize.ItemsSource = new List<double>() { 8, 9, 10, 11, 12, 14, 16, 18, 20, 22, 24, 26, 28, 36, 48, 72 };
+            //cmbFontFamily.SelectedIndex = 18;
+            if (cmbFontFamily.SelectedItem != null)
+            {
+                txtEditor.Selection.Select(txtEditor.Document.ContentStart, txtEditor.Document.ContentEnd);
+                txtEditor.Selection.ApplyPropertyValue(Inline.FontFamilyProperty, cmbFontFamily.SelectedItem);
+                txtEditor.Selection.Select(txtEditor.Document.ContentEnd, txtEditor.Document.ContentEnd);
+            }
+            else
+            {
+                cmbFontFamily.SelectedItem = cmbFontFamily.Items.GetItemAt(0);
+            }
 
-            //txtEditor.Selection.ApplyPropertyValue(Inline.FontFamilyProperty, cmbFontFamily.SelectedItem);
+            // ---------------------------------------[DEBUGGING]---------------------------------------
+            //this.Title = $"StatusBar: {statusBar.Visibility}, Property: {viewModel.StatusBarVisibility}";
+            this.Title = $"Can redo: {txtEditor.CanRedo}, Can undo: {txtEditor.CanUndo}";
         }
 
         #region [On any text changes event handler]
         private void txtEditor_SelectionChanged(object sender, RoutedEventArgs e)
         {
-            //this.Title = txtEditor.CaretPosition.GetTextInRun(LogicalDirection.Forward);
+            this.Title = $"Can redo: {txtEditor.CanRedo}, Can undo: {txtEditor.CanUndo}";
+            cmbFontFamily.SelectedItem = txtEditor.Selection.GetPropertyValue(Inline.FontFamilyProperty);
             //txtEditor.Selection.ApplyPropertyValue(Inline.FontFamilyProperty, cmbFontFamily.SelectedItem);
             CountInTextWordsCharsLines();
+            //MessageBox.Show($"Selection FontFamily: {txtEditor.Selection.GetPropertyValue(Inline.FontFamilyProperty)}");
+            
+            //string[] RichTextBoxLines = txtEditor.ToString().Split()
+            //foreach (string line in RichTextBoxLines)
+            //{
+            //    MessageBox.Show(line);
+            //}
         }
         #endregion
 
@@ -89,7 +111,8 @@ namespace Text_Editor
         #region [Font settings handlers]
         private void cmbFontFamily_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            this.Title = cmbFontFamily.Items.CurrentItem.ToString();
+            this.Title = cmbFontFamily.SelectedItem.ToString();
+            this.Title.ToLower();
             if (cmbFontFamily.SelectedItem != null)
             {
                 cmbFontFamily.FontFamily = cmbFontFamily.SelectedItem as FontFamily;
@@ -137,5 +160,11 @@ namespace Text_Editor
             lblWordsCount.Text = $"Words: {wordsCount}";
         }
         #endregion
+
+        private void Button_PreviewCanExecute(object sender, CanExecuteRoutedEventArgs e)
+        {
+            Button undo = sender as Button;
+            undo.Visibility = txtEditor.CanUndo ? Visibility.Visible : Visibility.Collapsed;
+        }
     }
 }

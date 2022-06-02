@@ -6,11 +6,15 @@
         xmlns:local="clr-namespace:Text_Editor"
         d:DataContext="{d:DesignInstance Type=local:ViewModel}"
         mc:Ignorable="d"
-        Title="Notepad" Height="250" Width="1000" Closing="Window_Closing" ResizeMode="CanResizeWithGrip" RenderOptions.BitmapScalingMode="HighQuality" Icon="Resources/Icons/main_icon.png">
+        Title="Notepad" FontFamily="{Binding ElementName=cmbFontFamily, Path=FontFamily}" Height="250" Width="1000" Closing="Window_Closing" ResizeMode="CanResizeWithGrip" RenderOptions.BitmapScalingMode="Linear" Icon="Resources/Icons/main_icon.png">
     <Window.Resources>
+        <!--#endregion-->
+        <!--#endregion-->
+        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
+        <AlternationConverter x:Key="AlternationConverter"/>
         <!--#region {STYLES}-->
         <Style x:Key="toolIconStyle" TargetType="{x:Type Image}">
-            <Setter Property="Width" Value="26"/>
+            <Setter Property="Width" Value="28"/>
             <!--<Setter Property="UseLayoutRounding" Value="True"/>-->
             <Setter Property="RenderOptions.BitmapScalingMode" Value="HighQuality"/>
         </Style>
@@ -19,12 +23,13 @@
         </Style>
         <Style x:Key="cmbFontFamilyStyle" TargetType="{x:Type ComboBox}">
             <Setter Property="VerticalContentAlignment" Value="Center"/>
-            <Setter Property="Width" Value="150"/>
+            <Setter Property="Width" Value="Auto"/>
+            <Setter Property="MinWidth" Value="50"/>
             <Setter Property="IsEditable" Value="True"/>
             <Setter Property="ToolTip" Value="Font family"/>
-            <Setter Property="SelectedIndex" Value="8"/>
             <!--<Setter Property="Margin" Value="2"/>-->
         </Style>
+
         <Style x:Key="darkMenuStyle" TargetType="{x:Type Menu}">
             <Setter Property="Background" Value="#FF333333"/>
             <Setter Property="Foreground" Value="#FFCCCCCC"/>
@@ -46,10 +51,9 @@
             <Setter Property="TextBlock.LineHeight" Value="1"/>
             <Setter Property="VerticalScrollBarVisibility" Value="Auto"/>
         </Style>
-        <!--#endregion-->
         <!--#region {CONTEXT MENUS}-->
         <ContextMenu x:Key="toolBarContextMenu">
-            <MenuItem Name="toolBarLockStatus" Header="Lock ToolBar" IsCheckable="True" IsChecked="{Binding Path=LockToolBar}"/>
+            <MenuItem x:Name="toolBarLockStatus" Header="Lock ToolBar" IsCheckable="True" IsChecked="{Binding LockToolBar}"/>
         </ContextMenu>
         <ContextMenu x:Key="textEditorContextMenu">
             <MenuItem Header="Cut" Command="Cut" InputGestureText="Ctrl+X" />
@@ -58,13 +62,12 @@
             <MenuItem Header="Delete" Command="Delete"/>
             <Separator />
             <MenuItem Header="Select All" Command="SelectAll" InputGestureText="Ctrl+A" />
-            <MenuItem Header="Deselect All" Command="{Binding Path=DeselectAllCommand}"/>
+            <MenuItem Header="Deselect All" Command="{Binding DeselectAllCommand}"/>
             <Separator TextBlock.FontSize="5"/>
             <MenuItem Header="Bold" Command="EditingCommands.ToggleBold" InputGestureText="Ctrl+B"/>
             <MenuItem Header="Italic" Command="EditingCommands.ToggleItalic" InputGestureText="Ctrl+I"/>
             <MenuItem Header="Underline" Command="EditingCommands.ToggleUnderline" InputGestureText="Ctrl+U"/>
         </ContextMenu>
-        <!--#endregion-->
     </Window.Resources>
     <Window.CommandBindings>
         <CommandBinding Command="ApplicationCommands.Open" Executed="Open_Executed"/>
@@ -93,7 +96,7 @@
             </MenuItem>
             <MenuItem Header="VIEW">
                 <MenuItem Header="Dock toolbar" IsCheckable="True" IsChecked="{Binding Path=LockToolBar}"/>
-                <MenuItem Header="Show statusbar" IsCheckable="True" IsChecked="{Binding Path=ShowStatusbar}" />
+                <MenuItem Header="Show statusbar" IsCheckable="True" IsChecked="{Binding Path=IsShowStatusBar}" />
             </MenuItem>
             <MenuItem Header="FORMAT" Background="{x:Null}">
                 <MenuItem Header="Bold" Command="EditingCommands.ToggleBold" InputGestureText="Ctrl+B"/>
@@ -109,11 +112,12 @@
             </ToolBarTray.ContextMenu>
             <!--#region {Text Editing}-->
             <ToolBar Band="0" BandIndex="0" Cursor="Hand">
-                <Button Command="ApplicationCommands.Undo" ToolTip="Undo">
+                <Button Command="ApplicationCommands.Undo" ToolTip="Undo" Opacity="{Binding Path=CanUndo}">
                     <Image Source="Resources/Icons/undo.png" Style="{StaticResource toolIconStyle}"/>
                 </Button>
-                <Button Command="ApplicationCommands.Redo" ToolTip="Redo">
+                <Button Command="ApplicationCommands.Redo" ToolTip="Redo" ClipToBounds="True"  IsManipulationEnabled="False">
                     <Image Source="Resources/Icons/redo.png" Style="{StaticResource toolIconStyle}"/>
+
                 </Button>
                 <Separator Style="{DynamicResource toolBoxSeparatorStyle}"/>
                 <Button Command="Open" ToolTip="Open" Padding="0">
@@ -156,11 +160,11 @@
                 <Button Command="EditingCommands.AlignCenter" ToolTip="Align center" ToolBar.OverflowMode="AsNeeded" >
                     <Image Source="/Resources/icons/align_center.png" Style="{StaticResource toolIconStyle}"/>
                 </Button>
-                <Button Command="EditingCommands.AlignJustify" ToolTip="Align justify" ToolBar.OverflowMode="AsNeeded">
-                    <Image Source="/Resources/icons/align_justify.png" Style="{StaticResource toolIconStyle}"/>
-                </Button>
                 <Button Command="EditingCommands.AlignRight" ToolTip="Align right" ToolBar.OverflowMode="AsNeeded">
                     <Image Source="/Resources/icons/align_right.png" Style="{StaticResource toolIconStyle}"/>
+                </Button>
+                <Button Command="EditingCommands.AlignJustify" ToolTip="Align justify" ToolBar.OverflowMode="AsNeeded">
+                    <Image Source="/Resources/icons/align_justify.png" Style="{StaticResource toolIconStyle}"/>
                 </Button>
                 <!--#endregion-->
             </ToolBar>
@@ -169,7 +173,7 @@
             <ToolBar Band="0" BandIndex="2" Height="30">
                 <!--<Image Source="Resources/Icons/font_choose.png" Style="{StaticResource toolIconStyle}"/>-->
                 <ComboBox Name="cmbFontFamily" SelectionChanged="cmbFontFamily_SelectionChanged" Style="{StaticResource cmbFontFamilyStyle}" FontSize="14"/>
-                <ComboBox Name="cmbFontSize" MinWidth="40" Width="Auto" IsEditable="True" TextBoxBase.TextChanged="cmbFontSize_TextChanged" FontSize="14"  Text="14" ToolTip="Font size" VerticalContentAlignment="Top"/>
+                <ComboBox Name="cmbFontSize" MinWidth="40" Width="Auto" IsEditable="True" TextBoxBase.TextChanged="cmbFontSize_TextChanged" FontSize="14"  Text="14" ToolTip="Font size" ItemsSource="{Binding Path=FontSizes}"/>
                 <Button Command="EditingCommands.IncreaseFontSize" ToolTip="Increase font size">
                     <Image Source="Resources/Icons/font_increase.png" Style="{StaticResource toolIconStyle}"/>
                 </Button>
@@ -185,12 +189,14 @@
             <Grid.RowDefinitions>
                 <RowDefinition Height="*" />
                 <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
+            <TextBlock Grid.Row="2" x:Name="toggleButton" Text="{Binding ElementName=txtEditor, Path=CaretPosition.Paragraph}"/>
             <RichTextBox Grid.Row="0" Name="txtEditor"
                          SelectionChanged="txtEditor_SelectionChanged"
                          Style="{StaticResource textEditorStyle}"
                          ContextMenu="{StaticResource textEditorContextMenu}"/>
-            <StatusBar Grid.Row="1" FontFamily="Bahnschrift CondensedLight" FontSize="12"> 
+            <StatusBar Grid.Row="1" Name="statusBar" FontFamily="Bahnschrift CondensedLight" FontSize="12" Visibility="{Binding Path=StatusBarVisibility}"> 
                 <StatusBarItem>
                     <TextBlock Name="lblLinesCount" Text="Lines: 0"/>
                 </StatusBarItem>
