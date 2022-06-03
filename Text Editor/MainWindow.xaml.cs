@@ -35,10 +35,9 @@ namespace Text_Editor
             this.DataContext = viewModel;
             // Біндимо до випадаючих списків список шрифтів та список розміру шрифту відповідно
             cmbFontFamily.ItemsSource = Fonts.SystemFontFamilies.OrderBy(f => f.Source);
-            cmbFontFamily.SelectedIndex = 18;
-            txtEditor.SelectAll();
-            txtEditor.Selection.ApplyPropertyValue(Inline.FontFamilyProperty, cmbFontFamily.SelectedItem);
-            txtEditor.Selection.Select(txtEditor.Document.ContentEnd, txtEditor.Document.ContentEnd);
+            cmbFontFamily.SelectedItem = txtEditor.Selection.GetPropertyValue(TextElement.FontFamilyProperty);
+            //txtEditor.Selection.ApplyPropertyValue(Inline.FontFamilyProperty, cmbFontFamily.SelectedItem);
+            //txtEditor.Selection.Select(txtEditor.Document.ContentEnd, txtEditor.Document.ContentEnd);
 
             // ---------------------------------------[DEBUGGING]---------------------------------------
             //this.Title = $"StatusBar: {statusBar.Visibility}, Property: {viewModel.StatusBarVisibility}";
@@ -49,12 +48,10 @@ namespace Text_Editor
         private void txtEditor_SelectionChanged(object sender, RoutedEventArgs e)
         {
             CountInTextWordsCharsLines();
-            //if(txtEditor.Selection.GetPropertyValue(Inline.FontFamilyProperty) != cmbFontFamily.SelectedItem)
-            //{
-            //    cmbFontFamily.SelectedItem = txtEditor.Selection.GetPropertyValue(Inline.FontFamilyProperty);
-            //}
-            //this.Title = $"Can redo: {txtEditor.CanRedo}, Can undo: {txtEditor.CanUndo}";
-            //txtEditor.Selection.ApplyPropertyValue(Inline.FontFamilyProperty, viewModel.CurrentFontFamily);
+            // Змінюємо обране значення комбобокса вибору шрифта текста в місці каретки(або виділеного тексту)
+            cmbFontFamily.SelectedItem = txtEditor.Selection.GetPropertyValue(Inline.FontFamilyProperty);
+            UpdateToolBar();
+
         }
         #endregion
 
@@ -100,11 +97,9 @@ namespace Text_Editor
         #region [Font settings handlers]
         private void cmbFontFamily_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            this.Title.ToLower();
             if (cmbFontFamily.SelectedItem != null)
             {
                 txtEditor.Selection.ApplyPropertyValue(Inline.FontFamilyProperty, cmbFontFamily.SelectedItem);
-                this.Title = cmbFontFamily.SelectedItem.ToString();
                 cmbFontFamily.FontFamily = cmbFontFamily.SelectedItem as FontFamily;
             }
         }
@@ -144,16 +139,32 @@ namespace Text_Editor
             }
 
             // Виводимо результати в строку стану(та шо знизу, розбита спліттерами)
-            lblLinesCount.Text = $"Lines: {splittedLines.Length}";
-            lblCharsCount.Text = $"Chars: {charsCount}";
-            lblWordsCount.Text = $"Words: {wordsCount}";
+            lblLinesCount.Content = $"Lines: {splittedLines.Length}";
+            lblCharsCount.Content = $"Chars: {charsCount}";
+            lblWordsCount.Content = $"Words: {wordsCount}";
         }
         #endregion
 
-        private void Button_PreviewCanExecute(object sender, CanExecuteRoutedEventArgs e)
+        public void UpdateToolBar()
         {
-            Button undo = sender as Button;
-            undo.Visibility = txtEditor.CanUndo ? Visibility.Visible : Visibility.Collapsed;
+            // Змінюємо значення checked кнопок в панелі інструментів в залежності від текста в місці каретки(або виділеного тексту)
+            tglbtnBold.IsChecked = txtEditor.Selection.GetPropertyValue(TextElement.FontWeightProperty).Equals(FontWeights.Bold);
+            tglbtnItalic.IsChecked = txtEditor.Selection.GetPropertyValue(TextElement.FontStyleProperty).Equals(FontStyles.Italic);
+            tglbtnUnderline.IsChecked = txtEditor.Selection.GetPropertyValue(Inline.TextDecorationsProperty).Equals(TextDecorations.Underline);
+            tglbtnAlignLeft.IsChecked = txtEditor.Selection.GetPropertyValue(Block.TextAlignmentProperty).Equals(TextAlignment.Left);
+            tglbtnAlignCenter.IsChecked = txtEditor.Selection.GetPropertyValue(Block.TextAlignmentProperty).Equals(TextAlignment.Center);
+            tglbtnAlignRight.IsChecked = txtEditor.Selection.GetPropertyValue(Block.TextAlignmentProperty).Equals(TextAlignment.Right);
+            tglbtnAlignJustify.IsChecked = txtEditor.Selection.GetPropertyValue(Block.TextAlignmentProperty).Equals(TextAlignment.Justify);
+        }
+
+        private void tglbtnAlign_Click(object sender, RoutedEventArgs e)
+        {
+            UpdateToolBar();
+        }
+
+        private void cmbFontFamily_Selected(object sender, RoutedEventArgs e)
+        {
+            MessageBox.Show("asasasasasas");
         }
     }
 }
