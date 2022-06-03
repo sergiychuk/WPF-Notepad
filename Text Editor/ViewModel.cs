@@ -11,7 +11,7 @@ namespace Text_Editor
 {
     public class ViewModel : INotifyPropertyChanged
     {
-        private readonly List<double> fontSizes = new List<double>() { 8, 9, 10, 11, 12, 14, 16, 18, 20, 22, 24, 26, 28, 36, 48, 72 };
+        private readonly DoubleCollection fontSizes = new DoubleCollection() { 8, 9, 10, 11, 12, 14, 16, 18, 20, 22, 24, 26, 28, 36, 48, 72 };
         private RichTextBox textEditor;
         private readonly RelayCommand newFileCommand;
         private readonly RelayCommand deselecAllCommand;
@@ -65,104 +65,7 @@ namespace Text_Editor
             }
         }
         public Visibility StatusBarVisibility => showStatusBar == true ? Visibility.Visible : Visibility.Collapsed;
-        public List<double> FontSizes { get { return fontSizes; } }
-
-        //public bool IsBold
-        //{ 
-        //    get
-        //    {
-        //        return isBold;
-        //    }
-        //    set
-        //    {
-        //        isBold = value;
-        //        OnPropertyChanged();
-        //    }
-        //}
-        //public bool IsItalic
-        //{ 
-        //    get
-        //    {
-        //        return isItalic;
-        //    }
-        //    set
-        //    {
-        //        isItalic = value;
-        //        OnPropertyChanged();
-        //    }
-        //}
-        //public bool IsUnderline
-        //{ 
-        //    get
-        //    {
-        //        return isUnderline;
-        //    }
-        //    set
-        //    {
-        //        isUnderline = value;
-        //        OnPropertyChanged();
-        //    }
-        //}
-        //public bool IsAlignLeft
-        //{ 
-        //    get
-        //    {
-        //        return isAlignLeft;
-        //    }
-        //    set
-        //    {
-        //        isAlignLeft = value;
-        //        OnPropertyChanged();
-        //        OnPropertyChanged(nameof(IsAlignCenter));
-        //        OnPropertyChanged(nameof(IsAlignRight));
-        //        OnPropertyChanged(nameof(IsAlignJustify));
-        //    }
-        //}
-        //public bool IsAlignCenter
-        //{ 
-        //    get
-        //    {
-        //        return isAlignCenter;
-        //    }
-        //    set
-        //    {
-        //        isAlignCenter = value;
-        //        OnPropertyChanged();
-        //        OnPropertyChanged(nameof(IsAlignLeft));
-        //        OnPropertyChanged(nameof(IsAlignRight));
-        //        OnPropertyChanged(nameof(IsAlignJustify));
-        //    }
-        //}
-        //public bool IsAlignRight
-        //{ 
-        //    get
-        //    {
-        //        return isAlignRight;
-        //    }
-        //    set
-        //    {
-        //        isAlignRight = value;
-        //        OnPropertyChanged();
-        //        OnPropertyChanged(nameof(IsAlignCenter));
-        //        OnPropertyChanged(nameof(IsAlignLeft));
-        //        OnPropertyChanged(nameof(IsAlignJustify));
-        //    }
-        //}
-        //public bool IsAlignJustify
-        //{ 
-        //    get
-        //    {
-        //        return isAlignJustify;
-        //    }
-        //    set
-        //    {
-        //        isAlignJustify = value;
-        //        OnPropertyChanged();
-        //        OnPropertyChanged(nameof(IsAlignLeft));
-        //        OnPropertyChanged(nameof(IsAlignCenter));
-        //        OnPropertyChanged(nameof(IsAlignRight));
-        //    }
-        //}
+        public DoubleCollection FontSizes { get { return fontSizes; } }
         #endregion
 
         #region [METHODS]
@@ -188,17 +91,6 @@ namespace Text_Editor
         {
             return MessageBox.Show("Create new file?", "New file", MessageBoxButton.YesNo) == MessageBoxResult.Yes;
         }
-
-        //public void TextEditorCheckTextFormatting()
-        //{
-        //    IsBold = textEditor.Selection.GetPropertyValue(TextElement.FontWeightProperty).Equals(FontWeights.Bold);
-        //    IsItalic = textEditor.Selection.GetPropertyValue(TextElement.FontStyleProperty).Equals(FontStyles.Italic);
-        //    IsUnderline = textEditor.Selection.GetPropertyValue(Inline.TextDecorationsProperty).Equals(TextDecorations.Underline);
-        //    IsAlignLeft = textEditor.Selection.GetPropertyValue(Block.TextAlignmentProperty).Equals(TextAlignment.Left);
-        //    IsAlignCenter = textEditor.Selection.GetPropertyValue(Block.TextAlignmentProperty).Equals(TextAlignment.Center);
-        //    IsAlignRight = textEditor.Selection.GetPropertyValue(Block.TextAlignmentProperty).Equals(TextAlignment.Right);
-        //    IsAlignJustify = textEditor.Selection.GetPropertyValue(Block.TextAlignmentProperty).Equals(TextAlignment.Justify);
-        //}
         #endregion
 
         public event PropertyChangedEventHandler PropertyChanged;
