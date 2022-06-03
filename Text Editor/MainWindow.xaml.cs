@@ -1,17 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using System.IO;
 using Microsoft.Win32;
 
@@ -36,22 +29,21 @@ namespace Text_Editor
             // Біндимо до випадаючих списків список шрифтів та список розміру шрифту відповідно
             cmbFontFamily.ItemsSource = Fonts.SystemFontFamilies.OrderBy(f => f.Source);
             cmbFontFamily.SelectedItem = txtEditor.Selection.GetPropertyValue(TextElement.FontFamilyProperty);
+            cmbFontSize.Text = txtEditor.Selection.GetPropertyValue(TextElement.FontSizeProperty).ToString();
+
+            // -----------------------------------------[DEBUGGING]-----------------------------------------
             //txtEditor.Selection.ApplyPropertyValue(Inline.FontFamilyProperty, cmbFontFamily.SelectedItem);
             //txtEditor.Selection.Select(txtEditor.Document.ContentEnd, txtEditor.Document.ContentEnd);
-
-            // ---------------------------------------[DEBUGGING]---------------------------------------
             //this.Title = $"StatusBar: {statusBar.Visibility}, Property: {viewModel.StatusBarVisibility}";
             //this.Title = $"Can redo: {txtEditor.CanRedo}, Can undo: {txtEditor.CanUndo}";
+            // ---------------------------------------------------------------------------------------------
         }
 
         #region [On any text changes in RichTextBox event handler]
         private void txtEditor_SelectionChanged(object sender, RoutedEventArgs e)
         {
             CountInTextWordsCharsLines();
-            // Змінюємо обране значення комбобокса вибору шрифта текста в місці каретки(або виділеного тексту)
-            cmbFontFamily.SelectedItem = txtEditor.Selection.GetPropertyValue(Inline.FontFamilyProperty);
             UpdateToolBar();
-
         }
         #endregion
 
@@ -72,6 +64,19 @@ namespace Text_Editor
             CountInTextWordsCharsLines();
         }
         private void Save_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            SaveFileDialog dlg = new SaveFileDialog
+            {
+                Filter = "Rich Text Format (*.rtf)|*.rtf|PDF (*.pdf)|*.pdf|All files (*.*)|*.*"
+            };
+            if (dlg.ShowDialog() == true)
+            {
+                FileStream fileStream = new FileStream(dlg.FileName, FileMode.Create);
+                TextRange range = new TextRange(txtEditor.Document.ContentStart, txtEditor.Document.ContentEnd);
+                range.Save(fileStream, DataFormats.Rtf);
+            }
+        }
+        private void SaveAs_Executed(object sender, ExecutedRoutedEventArgs e)
         {
             SaveFileDialog dlg = new SaveFileDialog
             {
@@ -105,7 +110,19 @@ namespace Text_Editor
         }
         private void cmbFontSize_TextChanged(object sender, TextChangedEventArgs e)
         {
-            txtEditor.Selection.ApplyPropertyValue(Inline.FontSizeProperty, cmbFontSize.Text);
+            double textSize;
+            if (double.TryParse(cmbFontSize.Text, out textSize))
+            {
+                txtEditor.Selection.ApplyPropertyValue(TextElement.FontSizeProperty, cmbFontSize.Text);
+            }
+            else
+            {
+                cmbFontSize.Text = cmbFontSize.SelectedItem.ToString();
+            }
+        }
+        private void cmbFontSize_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            txtEditor.Selection.ApplyPropertyValue(TextElement.FontSizeProperty, cmbFontSize.Text);
         }
         #endregion
 
@@ -151,20 +168,26 @@ namespace Text_Editor
             tglbtnBold.IsChecked = txtEditor.Selection.GetPropertyValue(TextElement.FontWeightProperty).Equals(FontWeights.Bold);
             tglbtnItalic.IsChecked = txtEditor.Selection.GetPropertyValue(TextElement.FontStyleProperty).Equals(FontStyles.Italic);
             tglbtnUnderline.IsChecked = txtEditor.Selection.GetPropertyValue(Inline.TextDecorationsProperty).Equals(TextDecorations.Underline);
-            tglbtnAlignLeft.IsChecked = txtEditor.Selection.GetPropertyValue(Block.TextAlignmentProperty).Equals(TextAlignment.Left);
-            tglbtnAlignCenter.IsChecked = txtEditor.Selection.GetPropertyValue(Block.TextAlignmentProperty).Equals(TextAlignment.Center);
-            tglbtnAlignRight.IsChecked = txtEditor.Selection.GetPropertyValue(Block.TextAlignmentProperty).Equals(TextAlignment.Right);
-            tglbtnAlignJustify.IsChecked = txtEditor.Selection.GetPropertyValue(Block.TextAlignmentProperty).Equals(TextAlignment.Justify);
+
+            // Змінюємо обране значення комбобокса вибору шрифта текста в місці каретки(або виділеного тексту)
+            cmbFontFamily.SelectedItem = txtEditor.Selection.GetPropertyValue(TextElement.FontFamilyProperty);
+            cmbFontSize.SelectedItem = txtEditor.Selection.GetPropertyValue(TextElement.FontSizeProperty).ToString();
+
+            //tglbtnAlignLeft.IsChecked = txtEditor.Selection.GetPropertyValue(Block.TextAlignmentProperty).Equals(TextAlignment.Left);
+            //tglbtnAlignCenter.IsChecked = txtEditor.Selection.GetPropertyValue(Block.TextAlignmentProperty).Equals(TextAlignment.Center);
+            //tglbtnAlignRight.IsChecked = txtEditor.Selection.GetPropertyValue(Block.TextAlignmentProperty).Equals(TextAlignment.Right);
+            //tglbtnAlignJustify.IsChecked = txtEditor.Selection.GetPropertyValue(Block.TextAlignmentProperty).Equals(TextAlignment.Justify);
         }
 
-        private void tglbtnAlign_Click(object sender, RoutedEventArgs e)
+        private void RepeatButtonIncreaseFontSize_Click(object sender, RoutedEventArgs e)
         {
-            UpdateToolBar();
+            cmbFontSize.Text = (double.Parse(cmbFontSize.Text) + 0.5d).ToString();
+        }
+        private void RepeatButtonDereaseFontSize_Click(object sender, RoutedEventArgs e)
+        {
+            cmbFontSize.Text = (double.Parse(cmbFontSize.Text) - 0.5d).ToString();
         }
 
-        private void cmbFontFamily_Selected(object sender, RoutedEventArgs e)
-        {
-            MessageBox.Show("asasasasasas");
-        }
+        
     }
 }
