@@ -86,7 +86,7 @@
         <CommandBinding Command="ApplicationCommands.Delete" Executed="Delete_Executed"/>
     </Window.CommandBindings>
     <DockPanel>
-        <Menu Name="editorMenu" DockPanel.Dock="Top" FontFamily="Exo" FontSize="13" FontWeight="Light">
+        <Menu Name="editorMenu" DockPanel.Dock="Top" FontFamily="Exo" FontSize="13" FontWeight="Medium">
             <MenuItem Header="_FILE">
                 <MenuItem Header="_New"/>
                 <MenuItem Header="_Open" Command="Open" InputGestureText="Ctrl+O" />
@@ -182,9 +182,9 @@
                 <RepeatButton Name="rptButtonIncreaseFontSize" Command="EditingCommands.IncreaseFontSize" ToolTip="Increase font size" Style="{StaticResource toolBoxFontSizeButtonStyle}" Click="RepeatButtonIncreaseFontSize_Click">
                     <Image Source="Resources/Icons/font_increase.png" Style="{StaticResource toolBoxIconStyle}"/>
                 </RepeatButton>
-                <Button Command="EditingCommands.DecreaseFontSize" ToolTip="Decrease font size">
+                <RepeatButton Command="EditingCommands.DecreaseFontSize" ToolTip="Decrease font size" Style="{StaticResource toolBoxFontSizeButtonStyle}" Click="RepeatButtonDereaseFontSize_Click">
                     <Image Source="Resources/Icons/font_decrease.png" Style="{StaticResource toolBoxIconStyle}"/>
-                </Button>
+                </RepeatButton>
             </ToolBar>
             <!--#endregion-->
         </ToolBarTray>
@@ -194,7 +194,7 @@
                 <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
             <RichTextBox Grid.Row="0" Name="txtEditor" Style="{StaticResource textEditorStyle}" ContextMenu="{StaticResource textEditorContextMenu}" SelectionChanged="txtEditor_SelectionChanged"/>
-            <StatusBar Grid.Row="1" Name="statusBar" FontFamily="Bahnschrift CondensedLight" FontSize="12" Visibility="{Binding Path=StatusBarVisibility}">
+            <StatusBar Grid.Row="1" Name="statusBar" FontFamily="Exo Medium" FontSize="12" Visibility="{Binding Path=StatusBarVisibility}">
                 <StatusBarItem Name="lblLinesCount" Content="Lines: 0"/>
                 <Separator/>
                 <StatusBarItem Name="lblCharsCount" Content="Chars: 0"/>

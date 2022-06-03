@@ -113,7 +113,9 @@ namespace Text_Editor
             double textSize;
             if (double.TryParse(cmbFontSize.Text, out textSize))
             {
-                txtEditor.Selection.ApplyPropertyValue(TextElement.FontSizeProperty, cmbFontSize.Text);
+                if (textSize > 3000)
+                    textSize = 3000;
+                txtEditor.Selection.ApplyPropertyValue(TextElement.FontSizeProperty, textSize);
             }
             else
             {
@@ -185,7 +187,10 @@ namespace Text_Editor
         }
         private void RepeatButtonDereaseFontSize_Click(object sender, RoutedEventArgs e)
         {
-            cmbFontSize.Text = (double.Parse(cmbFontSize.Text) - 0.5d).ToString();
+            if((double.Parse(cmbFontSize.Text) - 0.5d) >= 0.5d)
+            {
+                cmbFontSize.Text = (double.Parse(cmbFontSize.Text) - 0.5d).ToString();
+            }
         }
 
         
