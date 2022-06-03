@@ -6,17 +6,21 @@
         xmlns:local="clr-namespace:Text_Editor"
         d:DataContext="{d:DesignInstance Type=local:ViewModel}"
         mc:Ignorable="d"
-        Title="Notepad" Height="250" Width="1000" Closing="Window_Closing" ResizeMode="CanResizeWithGrip" RenderOptions.BitmapScalingMode="HighQuality" Icon="Resources/Icons/main_icon.png">
+        Style="{StaticResource mainWindowStyle}"
+        Closing="Window_Closing">
     <Window.Resources>
-        <!--#endregion-->
-        <!--#endregion-->
-        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
-        <AlternationConverter x:Key="AlternationConverter"/>
         <!--#region {STYLES}-->
-        <Style x:Key="toolIconStyle" TargetType="{x:Type Image}">
+        <Style x:Key="toolBoxIconStyle" TargetType="{x:Type Image}">
             <Setter Property="Width" Value="28"/>
-            <!--<Setter Property="UseLayoutRounding" Value="True"/>-->
             <Setter Property="RenderOptions.BitmapScalingMode" Value="HighQuality"/>
+        </Style>
+        <Style x:Key="toolBoxFontSizeButtonStyle" TargetType="{x:Type RepeatButton}">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Foreground" Value="Transparent"/>
+            <Setter Property="BorderBrush" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Delay" Value="500"/>
+            <Setter Property="Interval" Value="100"/>
         </Style>
         <Style x:Key="toolBoxSeparatorStyle" TargetType="{x:Type Separator}">
             <Setter Property="Margin" Value="5,3"/>
@@ -25,13 +29,20 @@
             <Setter Property="VerticalContentAlignment" Value="Center"/>
             <Setter Property="Width" Value="Auto"/>
             <Setter Property="MinWidth" Value="175"/>
-            <!--<Setter Property="IsEditable" Value="True"/>-->
+            <Setter Property="IsEditable" Value="True"/>
             <Setter Property="ToolTip" Value="Font family"/>
             <Setter Property="FontSize" Value="14"/>
-            <!--<Setter Property="Margin" Value="2"/>-->
+        </Style>
+        <Style x:Key="textEditorStyle" TargetType="{x:Type RichTextBox}">
+            <Setter Property="AcceptsReturn" Value="True"/>
+            <Setter Property="AcceptsTab" Value="True"/>
+            <Setter Property="TextBlock.LineHeight" Value="1"/>
+            <Setter Property="VerticalScrollBarVisibility" Value="Auto"/>
+            <Setter Property="Padding" Value="10,10,0,0"/>
         </Style>
 
-        <Style x:Key="darkMenuStyle" TargetType="{x:Type Menu}">
+        <Style BasedOn="{StaticResource {x:Type ToggleButton}}" TargetType="RadioButton"/>
+        <!--<Style x:Key="darkMenuStyle" TargetType="{x:Type Menu}">
             <Setter Property="Background" Value="#FF333333"/>
             <Setter Property="Foreground" Value="#FFCCCCCC"/>
         </Style>
@@ -46,12 +57,8 @@
         <Style x:Key="darkMenuItemStyle" TargetType="{x:Type MenuItem}">
             <Setter Property="Background" Value="#FF333333"/>
             <Setter Property="Foreground" Value="#FFCCCCCC"/>
-        </Style>
-        <Style x:Key="textEditorStyle" TargetType="{x:Type RichTextBox}">
-            <Setter Property="AcceptsReturn" Value="True"/>
-            <Setter Property="TextBlock.LineHeight" Value="1"/>
-            <Setter Property="VerticalScrollBarVisibility" Value="Auto"/>
-        </Style>
+        </Style>-->
+        <!--#endregion-->
         <!--#region {CONTEXT MENUS}-->
         <ContextMenu x:Key="toolBarContextMenu">
             <MenuItem x:Name="toolBarLockStatus" Header="Lock ToolBar" IsCheckable="True" IsChecked="{Binding LockToolBar}"/>
@@ -65,23 +72,26 @@
             <MenuItem Header="Select All" Command="SelectAll" InputGestureText="Ctrl+A" />
             <MenuItem Header="Deselect All" Command="{Binding DeselectAllCommand}"/>
             <Separator TextBlock.FontSize="5"/>
-            <MenuItem Header="Bold" Command="EditingCommands.ToggleBold" InputGestureText="Ctrl+B"/>
-            <MenuItem Header="Italic" Command="EditingCommands.ToggleItalic" InputGestureText="Ctrl+I"/>
-            <MenuItem Header="Underline" Command="EditingCommands.ToggleUnderline" InputGestureText="Ctrl+U"/>
+            <MenuItem Header="Bold" Command="EditingCommands.ToggleBold" InputGestureText="Ctrl+B" FontWeight="Bold"/>
+            <MenuItem Header="Italic" Command="EditingCommands.ToggleItalic" InputGestureText="Ctrl+I" FontStyle="Italic"/>
+            <MenuItem Header="Underline" Command="EditingCommands.ToggleUnderline" InputGestureText="Ctrl+U" />
         </ContextMenu>
+        <!--#endregion-->
     </Window.Resources>
     <Window.CommandBindings>
         <CommandBinding Command="ApplicationCommands.Open" Executed="Open_Executed"/>
         <CommandBinding Command="ApplicationCommands.Save" Executed="Save_Executed"/>
+        <CommandBinding Command="ApplicationCommands.SaveAs" Executed="SaveAs_Executed"/>
         <CommandBinding Command="ApplicationCommands.Close" Executed="Exit_Executed"/>
         <CommandBinding Command="ApplicationCommands.Delete" Executed="Delete_Executed"/>
     </Window.CommandBindings>
     <DockPanel>
-        <Menu Name="editorMenu" DockPanel.Dock="Top" FontFamily="Exo" FontSize="13" FontWeight="Medium">
+        <Menu Name="editorMenu" DockPanel.Dock="Top" FontFamily="Exo" FontSize="13" FontWeight="Light">
             <MenuItem Header="_FILE">
                 <MenuItem Header="_New"/>
                 <MenuItem Header="_Open" Command="Open" InputGestureText="Ctrl+O" />
                 <MenuItem Header="_Save" Command="Save" InputGestureText="Ctrl+S" />
+                <MenuItem Header="_Save As" Command="SaveAs" InputGestureText="Ctrl+Shift+S" />
                 <Separator />
                 <MenuItem Header="Exit" Command="Close" InputGestureText="Alt+F4"/>
             </MenuItem>
@@ -95,42 +105,42 @@
                 <MenuItem Header="Select All" Command="SelectAll" InputGestureText="Ctrl+A" />
                 <MenuItem Header="Deselect All" Command="{Binding Path=DeselectAllCommand}"/>
             </MenuItem>
-            <MenuItem Header="VIEW">
-                <MenuItem Header="Dock toolbar" IsCheckable="True" IsChecked="{Binding Path=LockToolBar}" />
-                <MenuItem Header="Show statusbar" IsCheckable="True" IsChecked="{Binding Path=IsShowStatusBar}" />
-            </MenuItem>
-            <MenuItem Header="FORMAT" Background="{x:Null}">
+            <MenuItem Header="FORMAT" Background="Transparent">
                 <MenuItem Header="Bold" Command="EditingCommands.ToggleBold" InputGestureText="Ctrl+B"/>
                 <MenuItem Header="Italic" Command="EditingCommands.ToggleItalic" InputGestureText="Ctrl+I"/>
                 <MenuItem Header="Underline" Command="EditingCommands.ToggleUnderline" InputGestureText="Ctrl+U" HorizontalContentAlignment="Center"/>
             </MenuItem>
+            <MenuItem Header="VIEW">
+                <MenuItem Header="Dock toolbar" IsCheckable="True" IsChecked="{Binding Path=LockToolBar}" />
+                <MenuItem Header="Show statusbar" IsCheckable="True" IsChecked="{Binding Path=IsShowStatusBar}" />
+            </MenuItem>
         </Menu>
-        <ToolBarTray DockPanel.Dock="Top" Height="Auto" IsLocked="{Binding Path=LockToolBar}" Focusable="False" ContextMenu="{StaticResource toolBarContextMenu}">
+        <ToolBarTray DockPanel.Dock="Top" Height="Auto" Focusable="False" IsLocked="{Binding Path=LockToolBar}" ContextMenu="{StaticResource toolBarContextMenu}">
             <!--#region {Text Editing}-->
             <ToolBar Band="0" BandIndex="0" Cursor="Hand">
                 <Button Command="ApplicationCommands.Undo" ToolTip="Undo" Opacity="{Binding Path=CanUndo}">
-                    <Image Source="Resources/Icons/undo.png" Style="{StaticResource toolIconStyle}"/>
+                    <Image Source="Resources/Icons/undo.png" Style="{StaticResource toolBoxIconStyle}"/>
                 </Button>
                 <Button Command="ApplicationCommands.Redo" ToolTip="Redo" ClipToBounds="True"  IsManipulationEnabled="False">
-                    <Image Source="Resources/Icons/redo.png" Style="{StaticResource toolIconStyle}"/>
+                    <Image Source="Resources/Icons/redo.png" Style="{StaticResource toolBoxIconStyle}"/>
 
                 </Button>
                 <Separator Style="{DynamicResource toolBoxSeparatorStyle}"/>
                 <Button Command="Open" ToolTip="Open" Padding="0">
-                    <Image Source="Resources/Icons/open_document.png" Style="{StaticResource toolIconStyle}"/>
+                    <Image Source="Resources/Icons/open_document.png" Style="{StaticResource toolBoxIconStyle}"/>
                 </Button>
                 <Button Command="Save" ToolTip="Save">
-                    <Image Source="Resources/Icons/save_document.png" Style="{StaticResource toolIconStyle}"/>
+                    <Image Source="Resources/Icons/save_document.png" Style="{StaticResource toolBoxIconStyle}"/>
                 </Button>
                 <Separator Style="{StaticResource toolBoxSeparatorStyle}"/>
                 <Button Command="Cut" ToolTip="Cut">
-                    <Image Source="Resources/Icons/cut.png" Style="{StaticResource toolIconStyle}"/>
+                    <Image Source="Resources/Icons/cut.png" Style="{StaticResource toolBoxIconStyle}"/>
                 </Button>
                 <Button Command="Copy" ToolTip="Copy">
-                    <Image Source="Resources/Icons/copy.png" Style="{StaticResource toolIconStyle}"/>
+                    <Image Source="Resources/Icons/copy.png" Style="{StaticResource toolBoxIconStyle}"/>
                 </Button>
                 <Button Command="Paste" ToolTip="Paste">
-                    <Image Source="Resources/Icons/paste.png" Style="{StaticResource toolIconStyle}"/>
+                    <Image Source="Resources/Icons/paste.png" Style="{StaticResource toolBoxIconStyle}"/>
                 </Button>
             </ToolBar>
             <!--#endregion-->
@@ -138,42 +148,42 @@
             <ToolBar Band="0" BandIndex="1">
                 <!--#region {Text Style}-->
                 <ToggleButton Name="tglbtnBold"  Command="EditingCommands.ToggleBold" ToolTip="Bold text" ToolBar.OverflowMode="AsNeeded" IsChecked="{Binding Path=IsBold}">
-                    <Image Source="Resources/Icons/bold.png" Style="{StaticResource toolIconStyle}"/>
+                    <Image Source="Resources/Icons/bold.png" Style="{StaticResource toolBoxIconStyle}"/>
                 </ToggleButton>
                 <ToggleButton Name="tglbtnItalic" Command="EditingCommands.ToggleItalic" ToolTip="Italic text" ToolBar.OverflowMode="AsNeeded" IsChecked="{Binding Path=IsItalic}">
-                    <Image Source="Resources/Icons/italic2.png" Style="{StaticResource toolIconStyle}"/>
+                    <Image Source="Resources/Icons/italic2.png" Style="{StaticResource toolBoxIconStyle}"/>
                 </ToggleButton>
                 <ToggleButton Name="tglbtnUnderline" Command="EditingCommands.ToggleUnderline" ToolTip="Underline text" ToolBar.OverflowMode="AsNeeded" IsChecked="{Binding Path=IsUnderline}">
-                    <Image Source="Resources/Icons/underline.png" Style="{StaticResource toolIconStyle}"/>
+                    <Image Source="Resources/Icons/underline.png" Style="{StaticResource toolBoxIconStyle}"/>
                 </ToggleButton>
                 <!--#endregion-->
                 <Separator />
-                <!--#region {Text Alignment}-->
-                <ToggleButton Name="tglbtnAlignLeft" Command="EditingCommands.AlignLeft" ToolTip="Align left" ToolBar.OverflowMode="AsNeeded" Click="tglbtnAlign_Click">
-                    <Image Style="{StaticResource toolIconStyle}" Source="/Resources/icons/align_left.png"/>
-                </ToggleButton>
-                <ToggleButton Name="tglbtnAlignCenter" Command="EditingCommands.AlignCenter" ToolTip="Align center" ToolBar.OverflowMode="AsNeeded" Click="tglbtnAlign_Click">
-                    <Image Source="/Resources/icons/align_center.png" Style="{StaticResource toolIconStyle}"/>
-                </ToggleButton>
-                <ToggleButton Name="tglbtnAlignRight" Command="EditingCommands.AlignRight" ToolTip="Align right" ToolBar.OverflowMode="AsNeeded" Click="tglbtnAlign_Click">
-                    <Image Source="/Resources/icons/align_right.png" Style="{StaticResource toolIconStyle}"/>
-                </ToggleButton>
-                <ToggleButton Name="tglbtnAlignJustify" Command="EditingCommands.AlignJustify" ToolTip="Align justify" ToolBar.OverflowMode="AsNeeded" Click="tglbtnAlign_Click">
-                    <Image Source="/Resources/icons/align_justify.png" Style="{StaticResource toolIconStyle}"/>
-                </ToggleButton>
+                <!--#region {Text Alignment Radiobuttons}-->
+                <RadioButton Name="tglbtnAlignLeft" Command="EditingCommands.AlignLeft" ToolTip="Align left" IsChecked="True" ToolBar.OverflowMode="AsNeeded">
+                    <Image Source="/Resources/icons/align_left.png" Style="{StaticResource toolBoxIconStyle}" />
+                </RadioButton>
+                <RadioButton Name="tglbtnAlignCenter" Command="EditingCommands.AlignCenter" ToolTip="Align center" ToolBar.OverflowMode="AsNeeded">
+                    <Image Source="/Resources/icons/align_center.png" Style="{StaticResource toolBoxIconStyle}" />
+                </RadioButton>
+                <RadioButton Name="tglbtnAlignRight" Command="EditingCommands.AlignRight" ToolTip="Align right" ToolBar.OverflowMode="AsNeeded">
+                    <Image Source="/Resources/icons/align_right.png" Style="{StaticResource toolBoxIconStyle}" />
+                </RadioButton>
+                <RadioButton Name="tglbtnAlignJustify" Command="EditingCommands.AlignJustify" ToolTip="Align justify" ToolBar.OverflowMode="AsNeeded">
+                    <Image Source="/Resources/icons/align_justify.png" Style="{StaticResource toolBoxIconStyle}" />
+                </RadioButton>
                 <!--#endregion-->
             </ToolBar>
             <!--#endregion-->
             <!--#region {Font Settings}-->
-            <ToolBar Band="0" BandIndex="2" Height="30">
-                <!--<Image Source="Resources/Icons/font_choose.png" Style="{StaticResource toolIconStyle}"/>-->
+            <ToolBar Band="0" BandIndex="2">
+                <!--<Image Source="Resources/Icons/font_choose.png" Style="{StaticResource toolBoxIconStyle}"/>-->
                 <ComboBox Name="cmbFontFamily" SelectionChanged="cmbFontFamily_SelectionChanged" Style="{StaticResource cmbFontFamilyStyle}"/>
-                <ComboBox Name="cmbFontSize" MinWidth="40" Width="Auto" IsEditable="True" TextBoxBase.TextChanged="cmbFontSize_TextChanged" FontSize="14"  Text="14" ToolTip="Font size" ItemsSource="{Binding Path=FontSizes}"/>
-                <Button Command="EditingCommands.IncreaseFontSize" ToolTip="Increase font size">
-                    <Image Source="Resources/Icons/font_increase.png" Style="{StaticResource toolIconStyle}"/>
-                </Button>
+                <ComboBox Name="cmbFontSize" Width="55" IsEditable="True" SelectionChanged="cmbFontSize_SelectionChanged" TextBoxBase.TextChanged="cmbFontSize_TextChanged" FontSize="14" ToolTip="Font size" ItemsSource="{Binding Path=FontSizes}"/>
+                <RepeatButton Name="rptButtonIncreaseFontSize" Command="EditingCommands.IncreaseFontSize" ToolTip="Increase font size" Style="{StaticResource toolBoxFontSizeButtonStyle}" Click="RepeatButtonIncreaseFontSize_Click">
+                    <Image Source="Resources/Icons/font_increase.png" Style="{StaticResource toolBoxIconStyle}"/>
+                </RepeatButton>
                 <Button Command="EditingCommands.DecreaseFontSize" ToolTip="Decrease font size">
-                    <Image Source="Resources/Icons/font_decrease.png" Style="{StaticResource toolIconStyle}"/>
+                    <Image Source="Resources/Icons/font_decrease.png" Style="{StaticResource toolBoxIconStyle}"/>
                 </Button>
             </ToolBar>
             <!--#endregion-->
@@ -190,9 +200,7 @@
                 <StatusBarItem Name="lblCharsCount" Content="Chars: 0"/>
                 <Separator/>
                 <StatusBarItem Name="lblWordsCount" Content="Words: 0"/>
-                <Separator />
-                <StatusBarItem Name="lblFontAtCursor" Content="Font: null"/>
-                <StatusBarItem HorizontalAlignment="Right" Name="lblScaleSettings" Content="Words: 0"/>
+                <StatusBarItem HorizontalAlignment="Right" Name="lblScaleSettings" Content="here will be shown Testing some values" Margin="0,0,15,0"/>
             </StatusBar>
         </Grid>
     </DockPanel>
