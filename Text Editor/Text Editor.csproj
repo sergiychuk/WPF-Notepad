@@ -175,19 +175,6 @@
   <ItemGroup>
     <Resource Include="main_icon.png" />
   </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\Icons\Material\Black\align_center.png" />
-    <Resource Include="Resources\Icons\Material\Black\align_left.png" />
-    <Resource Include="Resources\Icons\Material\Black\align_right.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\Icons\Material\Black\align_justify.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\Icons\Material\paste.ico" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="paste.ico" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
