@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:Text_Editor"
         d:DataContext="{d:DesignInstance Type=local:ViewModel}"
         mc:Ignorable="d"
-        Title="Notepad" FontFamily="{Binding ElementName=cmbFontFamily, Path=FontFamily}" Height="250" Width="1000" Closing="Window_Closing" ResizeMode="CanResizeWithGrip" RenderOptions.BitmapScalingMode="Linear" Icon="Resources/Icons/main_icon.png">
+        Title="Notepad" Height="250" Width="1000" Closing="Window_Closing" ResizeMode="CanResizeWithGrip" RenderOptions.BitmapScalingMode="HighQuality" Icon="Resources/Icons/main_icon.png">
     <Window.Resources>
         <!--#endregion-->
         <!--#endregion-->
@@ -24,9 +24,10 @@
         <Style x:Key="cmbFontFamilyStyle" TargetType="{x:Type ComboBox}">
             <Setter Property="VerticalContentAlignment" Value="Center"/>
             <Setter Property="Width" Value="Auto"/>
-            <Setter Property="MinWidth" Value="50"/>
-            <Setter Property="IsEditable" Value="True"/>
+            <Setter Property="MinWidth" Value="175"/>
+            <!--<Setter Property="IsEditable" Value="True"/>-->
             <Setter Property="ToolTip" Value="Font family"/>
+            <Setter Property="FontSize" Value="14"/>
             <!--<Setter Property="Margin" Value="2"/>-->
         </Style>
 
@@ -172,7 +173,7 @@
             <!--#region {Font Settings}-->
             <ToolBar Band="0" BandIndex="2" Height="30">
                 <!--<Image Source="Resources/Icons/font_choose.png" Style="{StaticResource toolIconStyle}"/>-->
-                <ComboBox Name="cmbFontFamily" SelectionChanged="cmbFontFamily_SelectionChanged" Style="{StaticResource cmbFontFamilyStyle}" FontSize="14"/>
+                <ComboBox Name="cmbFontFamily" SelectionChanged="cmbFontFamily_SelectionChanged" Style="{StaticResource cmbFontFamilyStyle}" SelectedValue="{Binding Path=CurrentFontFamily}"/>
                 <ComboBox Name="cmbFontSize" MinWidth="40" Width="Auto" IsEditable="True" TextBoxBase.TextChanged="cmbFontSize_TextChanged" FontSize="14"  Text="14" ToolTip="Font size" ItemsSource="{Binding Path=FontSizes}"/>
                 <Button Command="EditingCommands.IncreaseFontSize" ToolTip="Increase font size">
                     <Image Source="Resources/Icons/font_increase.png" Style="{StaticResource toolIconStyle}"/>
@@ -191,7 +192,7 @@
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
-            <TextBlock Grid.Row="2" x:Name="toggleButton" Text="{Binding ElementName=txtEditor, Path=CaretPosition.Paragraph}"/>
+            <ToggleButton Grid.Row="2" Name="toggleButton" Content="sldknlakdnlaskd"/>
             <RichTextBox Grid.Row="0" Name="txtEditor"
                          SelectionChanged="txtEditor_SelectionChanged"
                          Style="{StaticResource textEditorStyle}"

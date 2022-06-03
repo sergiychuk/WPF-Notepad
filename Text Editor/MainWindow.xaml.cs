@@ -35,37 +35,26 @@ namespace Text_Editor
             this.DataContext = viewModel;
             // Біндимо до випадаючих списків список шрифтів та список розміру шрифту відповідно
             cmbFontFamily.ItemsSource = Fonts.SystemFontFamilies.OrderBy(f => f.Source);
-            //cmbFontFamily.SelectedIndex = 18;
-            if (cmbFontFamily.SelectedItem != null)
-            {
-                txtEditor.Selection.Select(txtEditor.Document.ContentStart, txtEditor.Document.ContentEnd);
-                txtEditor.Selection.ApplyPropertyValue(Inline.FontFamilyProperty, cmbFontFamily.SelectedItem);
-                txtEditor.Selection.Select(txtEditor.Document.ContentEnd, txtEditor.Document.ContentEnd);
-            }
-            else
-            {
-                cmbFontFamily.SelectedItem = cmbFontFamily.Items.GetItemAt(0);
-            }
+            cmbFontFamily.SelectedIndex = 18;
+            txtEditor.SelectAll();
+            txtEditor.Selection.ApplyPropertyValue(Inline.FontFamilyProperty, cmbFontFamily.SelectedItem);
+            txtEditor.Selection.Select(txtEditor.Document.ContentEnd, txtEditor.Document.ContentEnd);
 
             // ---------------------------------------[DEBUGGING]---------------------------------------
             //this.Title = $"StatusBar: {statusBar.Visibility}, Property: {viewModel.StatusBarVisibility}";
-            this.Title = $"Can redo: {txtEditor.CanRedo}, Can undo: {txtEditor.CanUndo}";
+            //this.Title = $"Can redo: {txtEditor.CanRedo}, Can undo: {txtEditor.CanUndo}";
         }
 
-        #region [On any text changes event handler]
+        #region [On any text changes in RichTextBox event handler]
         private void txtEditor_SelectionChanged(object sender, RoutedEventArgs e)
         {
-            this.Title = $"Can redo: {txtEditor.CanRedo}, Can undo: {txtEditor.CanUndo}";
-            cmbFontFamily.SelectedItem = txtEditor.Selection.GetPropertyValue(Inline.FontFamilyProperty);
-            //txtEditor.Selection.ApplyPropertyValue(Inline.FontFamilyProperty, cmbFontFamily.SelectedItem);
             CountInTextWordsCharsLines();
-            //MessageBox.Show($"Selection FontFamily: {txtEditor.Selection.GetPropertyValue(Inline.FontFamilyProperty)}");
-            
-            //string[] RichTextBoxLines = txtEditor.ToString().Split()
-            //foreach (string line in RichTextBoxLines)
+            //if(txtEditor.Selection.GetPropertyValue(Inline.FontFamilyProperty) != cmbFontFamily.SelectedItem)
             //{
-            //    MessageBox.Show(line);
+            //    cmbFontFamily.SelectedItem = txtEditor.Selection.GetPropertyValue(Inline.FontFamilyProperty);
             //}
+            //this.Title = $"Can redo: {txtEditor.CanRedo}, Can undo: {txtEditor.CanUndo}";
+            //txtEditor.Selection.ApplyPropertyValue(Inline.FontFamilyProperty, viewModel.CurrentFontFamily);
         }
         #endregion
 
@@ -111,12 +100,12 @@ namespace Text_Editor
         #region [Font settings handlers]
         private void cmbFontFamily_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            this.Title = cmbFontFamily.SelectedItem.ToString();
             this.Title.ToLower();
             if (cmbFontFamily.SelectedItem != null)
             {
-                cmbFontFamily.FontFamily = cmbFontFamily.SelectedItem as FontFamily;
                 txtEditor.Selection.ApplyPropertyValue(Inline.FontFamilyProperty, cmbFontFamily.SelectedItem);
+                this.Title = cmbFontFamily.SelectedItem.ToString();
+                cmbFontFamily.FontFamily = cmbFontFamily.SelectedItem as FontFamily;
             }
         }
         private void cmbFontSize_TextChanged(object sender, TextChangedEventArgs e)

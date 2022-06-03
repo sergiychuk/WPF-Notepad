@@ -1,35 +1,22 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
+﻿using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Input;
-using System.Windows.Documents;
 using System.Windows.Controls;
-using System.Windows.Media.TextFormatting;
+using System.Windows.Input;
+using System.Windows.Media;
 
 namespace Text_Editor
 {
     public class ViewModel : INotifyPropertyChanged
     {
-        private List<double> fontSizes = new List<double>() { 8, 9, 10, 11, 12, 14, 16, 18, 20, 22, 24, 26, 28, 36, 48, 72 };
+        private readonly List<double> fontSizes = new List<double>() { 8, 9, 10, 11, 12, 14, 16, 18, 20, 22, 24, 26, 28, 36, 48, 72 };
         private RichTextBox textEditor;
         private readonly RelayCommand newFileCommand;
         private readonly RelayCommand deselecAllCommand;
         private bool lockToolBar = true;
         private bool showStatusBar = true;
         public Visibility statusBarVisibility;
-
-        private Block _block;
-        private Paragraph _paragraph;
-        private Inline _Inline;
-        private InlineUIContainer _inlineUIContainer;
-        private bool foundit = false;
-        //public Fonts.SystemFontFamilies.f fontFamily;
 
         #region [CONSTRUCTOR]
         public ViewModel(RichTextBox richTextBox)
@@ -47,10 +34,8 @@ namespace Text_Editor
         #endregion
 
         #region [PROPERTIES]
-        // Властивість для об'єкту RichTextBox
-        //public RichTextBox TextEditor{ get { return textEditor; } set { textEditor = value; } }
         public bool LockToolBar
-        { 
+        {
             get { return lockToolBar; }
             set
             {
@@ -59,10 +44,10 @@ namespace Text_Editor
             }
         }
         public bool IsShowStatusBar
-        { 
+        {
             get { return showStatusBar; }
-            set 
-            { 
+            set
+            {
                 showStatusBar = value;
                 //statusBarVisibility = showStatusBar == true ? Visibility.Visible : Visibility.Hidden;
                 OnPropertyChanged();
@@ -82,6 +67,8 @@ namespace Text_Editor
                     return 0.5f;
             }
         }
+
+        public FontFamily CurrentFontFamily { get; set; }
         #endregion
 
         #region [METHODS]
@@ -95,7 +82,7 @@ namespace Text_Editor
         {
             textEditor.Selection.Select(textEditor.Document.ContentEnd, textEditor.Document.ContentEnd);
         }
-        
+
         // Створення нового файлу(насправді просто очистка текста)
         public void NewFile()
         {
