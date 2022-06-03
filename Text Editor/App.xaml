@@ -4,6 +4,14 @@
              xmlns:local="clr-namespace:Text_Editor"
              StartupUri="MainWindow.xaml">
     <Application.Resources>
-        
+        <Style x:Key="mainWindowStyle" TargetType="{x:Type Window}">
+            <Setter Property="Title" Value="Notepad"/>
+            <Setter Property="Height" Value="350"/>
+            <Setter Property="Width" Value="1000"/>
+            <Setter Property="ResizeMode" Value="CanResizeWithGrip"/>
+            <Setter Property="RenderOptions.BitmapScalingMode" Value="HighQuality"/>
+            <Setter Property="Icon" Value="Resources/Icons/main_icon.png"/>
+            <Setter Property="FontFamily" Value="Exo"/>
+        </Style>
     </Application.Resources>
 </Application>
